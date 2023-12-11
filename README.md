@@ -11,6 +11,11 @@ python -m venv myvenv
 .\myvenv\Scripts\activate
 ```
 
+## Install the requirements
+```sh
+pip install -r requirements.txt
+```
+
 ## Run the python file
 ```sh
 python RPS.py
