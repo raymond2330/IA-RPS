@@ -1,4 +1,5 @@
 # IA-RPS
+
 ### Note:
 Still not done, there're still many requirements that were not met. Will try to update this project ASAP.
 
@@ -22,3 +23,5 @@ pip install -r requirements.txt
 ```sh
 python RPS.py
 ```
+
+C:\Users\Raymond\AppData\Local\Programs\Python\Python311/python.exe -m venv venv

@@ -125,6 +125,8 @@ with mp_hands.Hands(
         hand_landmarks = []
         isCounting = False
         count = 0
+        
+        hand_landmarks_in_box = [] 
 
         # If at least one hand is detected this will execute.
         if results.multi_hand_landmarks:
@@ -171,11 +173,11 @@ with mp_hands.Hands(
 
                 # Number of fingers held up are counted.
                 count = compute_fingers(hand_landmarks, count)
-                # accumulated_hand_landmarks.append(hand_landmarks)
 
                 handNumber += 1
                 
 
+            #accumulate the hand landmarks
             for hand_landmarks in results.multi_hand_landmarks:
                 single_hand_landmark = []
 
@@ -186,10 +188,40 @@ with mp_hands.Hands(
                         landmark.y,
                         landmark.z if landmark.HasField('z') else None
                     ]
-                    single_hand_landmark.extend(single_landmark)
+                    
+                    if top_left[0] < xPos < bottom_right[0] and top_left[1] < yPos < bottom_right[1]:
+                        single_hand_landmark.extend(single_landmark)
+                        
 
                 frame_hand_landmarks.append(single_hand_landmark)
+                
+                if top_left[0] < xPos < bottom_right[0] and top_left[1] < yPos < bottom_right[1]:
+                    frame_hand_landmarks.append([player_choice])
+                
             accumulated_hand_landmarks.append(frame_hand_landmarks)
+            
+            
+            
+            
+            
+            # for hand_landmarks in results.multi_hand_landmarks:
+            #     landmarks_in_box = []  # Temporary list to store landmarks within the box for this hand
+
+            #     for idx, landmark in enumerate(hand_landmarks.landmark):
+            #         # Convert unit-less hand landmarks into pixel counts
+            #         xPos, yPos = float(landmark.x * width), float(landmark.y * height)
+            #         zPos = landmark.z if landmark.HasField('z') else None
+
+            #         # Check if the landmark is within the bounding box
+            #         if top_left[0] < xPos < bottom_right[0] and top_left[1] < yPos < bottom_right[1]:
+            #             landmarks_in_box.append([idx, xPos, yPos, zPos])
+
+            #     # Add the landmarks within the box for this hand to the list
+            #     if len(landmarks_in_box) > 0:
+            #         hand_landmarks_in_box.append(landmarks_in_box)
+                    
+            # accumulated_hand_landmarks.append(hand_landmarks_in_box)
+
 
         else:
             hand_valid = False
@@ -240,12 +272,13 @@ with mp_hands.Hands(
         if cv2.waitKey(1) & 0xFF == 27:
             break
 
-# After the loop ends, write accumulated hand landmarks to a CSV file
+
 csv_filename = "hand_landmarks.csv"
 
 with open(csv_filename, mode='w', newline='') as file:
     writer = csv.writer(file)
     header = ["Hand" + str(i) + "_" + str(j) for i in range(2) for j in range(21)]
+    header.append("Player_Choice")
     writer.writerow(header)
 
     for frame_landmarks in accumulated_hand_landmarks:
